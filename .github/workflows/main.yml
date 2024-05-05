@@ -23,7 +23,9 @@ jobs:
           separator: ","
           files_yaml: |
             md:
-             - '**.md'
+              - '**.md'
+            yml:
+              - '**.yml'
       - run: |
           echo any_changed ${{ steps.files.outputs.any_changed }}
           echo md_any_changed ${{ steps.files.outputs.md_any_changed }}
@@ -32,11 +34,12 @@ jobs:
           echo md_changed_files ${{ steps.files.outputs.md_changed_files }}
 
   list:
-    if: ${{ needs.files.outputs.whole.md_any_changed == 'true' }}
+    if: ${{ needs.files.outputs.md == 'true' }}
     name: List Files
     runs-on: [ubuntu-latest]
     needs: files
     steps:
+      - run: echo ${{ steps.files.outputs.whole }}
       - name: Print all files
         env:
           SEPARATOR: ","
