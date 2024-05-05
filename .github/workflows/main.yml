@@ -25,9 +25,11 @@ jobs:
             md:
              - '**.md'
       - run: |
-          echo ${{ steps.files.outputs.changed_keys }}
-          echo ${{ steps.files.outputs.all_changed_files }}
-          echo ${{ steps.files.outputs.md_changed_files }}
+          echo any_changed ${{ steps.files.outputs.any_changed }}
+          echo md_any_changed ${{ steps.files.outputs.md_any_changed }}
+          echo changed_keys ${{ steps.files.outputs.changed_keys }}
+          echo all_changed_files ${{ steps.files.outputs.all_changed_files }}
+          echo md_changed_files ${{ steps.files.outputs.md_changed_files }}
 
   list:
     if: ${{ needs.files.outputs.md_any_changed == 'true' }}
