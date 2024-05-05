@@ -12,7 +12,7 @@ jobs:
     runs-on: [ubuntu-latest]
     outputs:
       md: ${{ steps.files.outputs.md_any_changed }}
-      whole: ${{ steps.files.outputs }}
+      whole: ${{ steps.files.outputs.* }}
       changed: ${{ steps.files.outputs.changed_keys }}
     steps:
       - uses: actions/checkout@v4
