@@ -1,0 +1,42 @@
+name: main
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+jobs:
+  files:
+    name: Changed Files
+    runs-on: [ubuntu-latest]
+    outputs:
+      md: ${{ steps.files.outputs.md_any_changed }}
+      whole: steps.files.outputs
+      keys: ${{ steps.files.output.changed_keys }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get changed files by types
+        uses: tj-actions/changed-files@v44
+        id: files
+        with:
+          separator: ","
+          files_yaml: |
+            md:
+             - '**.md'
+      - run: |
+          echo ${{ steps.files.outputs.changed_keys }}
+          echo ${{ steps.files.outputs.all_changed_files }}
+          echo ${{ steps.files.outputs.md_changed_files }}
+
+  list:
+    if: ${{ steps.files.outputs.md_any_changed == 'true' }}
+    name: List Files
+    runs-on: [ubuntu-latest]
+    needs: files
+    steps:
+      - name: Print all files
+        env:
+          SEPARATOR: ","
+          CHANGED_FILES: ${{ steps.files.outputs.whole.md_changed_files }}
+        run: .github/actions/scripts/whitespaced_path.sh
