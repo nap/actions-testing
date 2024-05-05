@@ -13,7 +13,7 @@ jobs:
     outputs:
       md: ${{ steps.files.outputs.md_any_changed }}
       whole: steps.files.outputs
-      keys: ${{ steps.files.output.changed_keys }}
+      changed: ${{ steps.files.output.changed_keys }}
     steps:
       - uses: actions/checkout@v3
       - name: Get changed files by types
@@ -27,21 +27,22 @@ jobs:
             yml:
               - '**.yml'
       - run: |
-          echo any_changed ${{ steps.files.outputs.any_changed }}
           echo md_any_changed ${{ steps.files.outputs.md_any_changed }}
           echo changed_keys ${{ steps.files.outputs.changed_keys }}
           echo all_changed_files ${{ steps.files.outputs.all_changed_files }}
           echo md_changed_files ${{ steps.files.outputs.md_changed_files }}
 
   list:
-    if: ${{ needs.files.outputs.md == 'true' }}
+    if: ${{ contains(needs.files.outputs.changed, 'md') }}
     name: List Files
     runs-on: [ubuntu-latest]
     needs: files
+    env:
+      WHOLE: ${{ needs.files.outputs.whole }}
     steps:
-      - run: echo ${{ steps.files.outputs.whole }}
+      - run: echo $WHOLE
       - name: Print all files
         env:
           SEPARATOR: ","
           CHANGED_FILES: ${{ steps.files.outputs.whole.md_changed_files }}
-        run: .github/actions/scripts/whitespaced_path.sh
+        run: .github/actions/scripts/list_files.sh
