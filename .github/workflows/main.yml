@@ -15,7 +15,9 @@ jobs:
       whole: steps.files.outputs
       changed: ${{ steps.files.output.changed_keys }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - name: Get changed files by types
         uses: tj-actions/changed-files@v44
         id: files
