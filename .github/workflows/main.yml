@@ -11,9 +11,11 @@ jobs:
     name: Changed Files
     runs-on: [ubuntu-latest]
     outputs:
-      md: ${{ steps.files.outputs.md_any_changed }}
-      whole: ${{ steps.files.outputs.* }}
-      changed: ${{ steps.files.outputs.changed_keys }}
+      keys: ${{ steps.files.outputs.changed_keys }}
+      md_any_changed: ${{ steps.files.outputs.md_any_changed }}
+      md_all_changed_files: ${{ steps.files.outputs.md_all_changed_files }}
+      all_changed_files: ${{ steps.files.outputs.all_changed_files }}
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,10 +31,10 @@ jobs:
             yml:
               - '**.yml'
       - run: |
-          echo md_any_changed ${{ steps.files.outputs.md_any_changed }}
           echo changed_keys ${{ steps.files.outputs.changed_keys }}
+          echo md_any_changed ${{ steps.files.outputs.md_any_changed }}
+          echo md_all_changed_files ${{ steps.files.outputs.md_all_changed_files }}
           echo all_changed_files ${{ steps.files.outputs.all_changed_files }}
-          echo md_changed_files ${{ steps.files.outputs.md_changed_files }}
 
   list:
     if: ${{ contains(needs.files.outputs.changed, 'md') }}
@@ -40,7 +42,7 @@ jobs:
     runs-on: [ubuntu-latest]
     needs: files
     env:
-      WHOLE: ${{ needs.files.outputs.whole }}
+      WHOLE: ${{ needs.files.outputs.md_all_changed_files }}
     steps:
       - run: echo $WHOLE
       - name: Print all files
