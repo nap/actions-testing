@@ -58,9 +58,10 @@ jobs:
     steps:
       - run: echo ${CHANGED_FILES}
       - run: pwd
-      - run: ls .github/actions/scripts/list_files.sh
+      - run: ls -la
+      - run: ls ./.github/actions/scripts/list_files.sh
       - name: Print all files
         env:
           SEPARATOR: ","
           CHANGED_FILES: ${CHANGED_FILES}
-        run: ./.github/actions/scripts/list_files.sh
+        uses: .github/actions/scripts/list_files.sh
