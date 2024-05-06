@@ -60,8 +60,10 @@ jobs:
       - run: pwd
       - run: ls -la
       - run: ls ./.github/actions/scripts/list_files.sh
+      - run: ls .github/actions/scripts/list_files.sh
+      - run: find ./
       - name: Print all files
         env:
           SEPARATOR: ","
           CHANGED_FILES: ${CHANGED_FILES}
-        uses: .github/actions/scripts/list_files.sh
+        run: .github/actions/scripts/list_files.sh
