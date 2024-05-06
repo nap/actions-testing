@@ -6,6 +6,11 @@ on:
   push:
     branches:
       - main
+
+defaults:
+  run:
+    shell: bash -xeo pipefail {0}
+
 jobs:
   files:
     name: Changed Files
