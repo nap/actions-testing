@@ -56,7 +56,8 @@ jobs:
     env:
       CHANGED_FILES: ${{ fromJSON(needs.files.outputs.changed_files)['md_all_changed_files'] }}
     steps:
-      - run: ${{ fromJSON(needs.files.outputs.changed_files) }}
+      - name: expand files
+        run: ${{ fromJSON(needs.files.outputs.changed_files) }}
       - run: echo ${CHANGED_FILES}
       - run: pwd
       - run: ls .github/actions/scripts/list_files.sh
