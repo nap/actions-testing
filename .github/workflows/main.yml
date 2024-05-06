@@ -10,10 +10,12 @@ jobs:
   files:
     name: Changed Files
     runs-on: [ubuntu-latest]
+    permissions:
+      pull-requests: read
     outputs:
       keys: ${{ steps.files.outputs.changed_keys }}
-      md_any_changed: ${{ steps.files.outputs.md_any_changed }}
       md_all_changed_files: ${{ steps.files.outputs.md_all_changed_files }}
+      yml_all_changed_files: ${{ steps.files.outputs.yml_all_changed_files }}
       all_changed_files: ${{ steps.files.outputs.all_changed_files }}
 
     steps:
@@ -32,12 +34,19 @@ jobs:
               - '**.yml'
       - run: |
           echo changed_keys ${{ steps.files.outputs.changed_keys }}
+
           echo md_any_changed ${{ steps.files.outputs.md_any_changed }}
           echo md_all_changed_files ${{ steps.files.outputs.md_all_changed_files }}
+
+          echo yml_any_changed ${{ steps.files.outputs.yml_any_changed }}
+          echo yml_all_changed_files ${{ steps.files.outputs.yml_all_changed_files }}
+
           echo all_changed_files ${{ steps.files.outputs.all_changed_files }}
 
+          echo -e "DUMP: \n${{steps.files.outputs}}"
+
   list:
-    if: ${{ contains(needs.files.outputs.changed, 'md') }}
+    if: ${{ contains(needs.files.outputs.keys, 'md') }}
     name: List Files
     runs-on: [ubuntu-latest]
     needs: files
@@ -45,8 +54,9 @@ jobs:
       WHOLE: ${{ needs.files.outputs.md_all_changed_files }}
     steps:
       - run: echo $WHOLE
+      - run: echo ${{ needs.files.outputs.md_all_changed_files }}
       - name: Print all files
         env:
           SEPARATOR: ","
-          CHANGED_FILES: ${{ steps.files.outputs.whole.md_changed_files }}
+          CHANGED_FILES: ${{ needs.files.outputs.md_all_changed_files }}
         run: .github/actions/scripts/list_files.sh
