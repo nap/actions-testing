@@ -41,9 +41,9 @@ jobs:
           echo yml_any_changed ${{ steps.files.outputs.yml_any_changed }}
           echo yml_all_changed_files ${{ steps.files.outputs.yml_all_changed_files }}
 
-          echo all_changed_files ${{ steps.files.outputs.all_changed_files }}
+          echo changed_files ${{ steps.files.outputs.changed_files }}
 
-          echo -e "DUMP: \n${{steps.files.outputs}}"
+          echo -e "DUMP: \n${{ toJSON(steps.files.outputs) }}"
 
   list:
     if: ${{ contains(needs.files.outputs.keys, 'md') }}
