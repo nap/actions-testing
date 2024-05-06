@@ -37,33 +37,38 @@ jobs:
               - '**.yml'
       - run: |
           echo changed_keys ${{ steps.files.outputs.changed_keys }}
-
-          echo md_any_changed ${{ steps.files.outputs.md_any_changed }}
-          echo md_all_changed_files ${{ steps.files.outputs.md_all_changed_files }}
-
-          echo yml_any_changed ${{ steps.files.outputs.yml_any_changed }}
-          echo yml_all_changed_files ${{ steps.files.outputs.yml_all_changed_files }}
-
-          echo changed_files ${{ steps.files.outputs.changed_files }}
-
-          echo -e "DUMP: \n${{ toJSON(steps.files.outputs) }}"
+          echo ${{ toJSON(steps.files.outputs) }}
 
   md:
     if: ${{ contains(needs.files.outputs.keys, 'md') }}
-    name: List Files
+    name: List md Files
     runs-on: [ubuntu-latest]
     needs: files
     env:
       CHANGED_FILES: ${{ fromJSON(needs.files.outputs.changed_files)['md_all_changed_files'] }}
     steps:
-      - run: echo ${CHANGED_FILES}
-      - run: pwd
-      - run: ls -la
-      - run: ls ./.github/actions/scripts/list_files.sh
-      - run: ls .github/actions/scripts/list_files.sh
-      - run: find ./
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
       - name: Print all files
         env:
           SEPARATOR: ","
-          CHANGED_FILES: ${CHANGED_FILES}
+        run: .github/actions/scripts/list_files.sh
+
+  yml:
+    if: ${{ contains(needs.files.outputs.keys, 'yml') }}
+    name: List yml Files
+    runs-on: [ubuntu-latest]
+    needs: files
+    env:
+      CHANGED_FILES: ${{ fromJSON(needs.files.outputs.changed_files)['yml_all_changed_files'] }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Print all files
+        env:
+          SEPARATOR: ","
         run: .github/actions/scripts/list_files.sh
