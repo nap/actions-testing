@@ -36,8 +36,8 @@ jobs:
             yml:
               - '**.yml'
       - run: |
-          echo changed_keys ${{ steps.files.outputs.changed_keys }}
-          echo ${{ toJSON(steps.files.outputs) }}
+          echo changed_keys "${{ steps.files.outputs.changed_keys }}"
+          echo "${{ toJSON(steps.files.outputs) }}"
 
   md:
     if: ${{ contains(needs.files.outputs.keys, 'md') }}
