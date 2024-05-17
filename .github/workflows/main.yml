@@ -9,17 +9,16 @@ on:
 
 defaults:
   run:
-    shell: bash -xeo pipefail {0}
+    shell: /usr/bin/env -S bash -O globstar -xeo pipefail {0}
 
 jobs:
   files:
-    name: Changed Files
     runs-on: [ubuntu-latest]
     permissions:
       pull-requests: read
     outputs:
-      keys: ${{ steps.files.outputs.changed_keys }}
-      changed_files: ${{ toJSON(steps.files.outputs) }}
+      keys: steps.files.outputs.changed_keys
+      changed_files: toJSON(steps.files.outputs)
 
     steps:
       - uses: actions/checkout@v4
@@ -40,35 +39,37 @@ jobs:
           echo "${{ toJSON(steps.files.outputs) }}"
 
   md:
-    if: ${{ contains(needs.files.outputs.keys, 'md') }}
-    name: List md Files
+    if: contains(needs.files.outputs.keys, 'md')
     runs-on: [ubuntu-latest]
     needs: files
     env:
-      CHANGED_FILES: ${{ fromJSON(needs.files.outputs.changed_files)['md_all_changed_files'] }}
+      CHANGED_FILES: fromJSON(needs.files.outputs.changed_files)['md_all_changed_files']
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
-      - name: Print all files
+      - run: .github/actions/scripts/list_files.sh
         env:
           SEPARATOR: ","
-        run: .github/actions/scripts/list_files.sh
 
   yml:
-    if: ${{ contains(needs.files.outputs.keys, 'yml') }}
-    name: List yml Files
+    if: contains(needs.files.outputs.keys, 'yml')
     runs-on: [ubuntu-latest]
     needs: files
     env:
-      CHANGED_FILES: ${{ fromJSON(needs.files.outputs.changed_files)['yml_all_changed_files'] }}
+      CHANGED_FILES: fromJSON(needs.files.outputs.changed_files)['yml_all_changed_files']
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
-      - name: Print all files
+      - run: .github/actions/scripts/list_files.sh
         env:
           SEPARATOR: ","
-        run: .github/actions/scripts/list_files.sh
+
+  anonymous:
+    if: contains(needs.yml.*.result, 'success')
+    runs-on: [ubuntu-latest]
+    steps:
+      - run: echo "I'm good to go."
