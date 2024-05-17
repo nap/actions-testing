@@ -69,6 +69,6 @@ jobs:
   anonymous:
     if: contains(needs.yml.result, 'success')
     runs-on: [ubuntu-latest]
-    needs: [files]
+    needs: [files, yml]
     steps:
       - run: echo "I'm good to go."
