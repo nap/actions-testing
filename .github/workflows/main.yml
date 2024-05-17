@@ -39,7 +39,7 @@ jobs:
           echo "${{ toJSON(steps.files.outputs) }}"
 
   md:
-    if: contains(needs.files.outputs.keys, 'md')
+    if: ${{ contains(needs.files.outputs.keys, 'md') }}
     runs-on: [ubuntu-latest]
     needs: files
     env:
@@ -54,7 +54,7 @@ jobs:
           SEPARATOR: ","
 
   yml:
-    if: contains(needs.files.outputs.keys, 'yml')
+    if: ${{ contains(needs.files.outputs.keys, 'yml') }}
     runs-on: [ubuntu-latest]
     needs: files
     env:
@@ -69,8 +69,8 @@ jobs:
           SEPARATOR: ","
 
   anonymous:
-    if: contains(needs.yml.*.result, 'success')
+    if: ${{ contains(needs.yml.*.result, 'success') }}
     runs-on: [ubuntu-latest]
-    needs: files
+    needs: [files, yml]
     steps:
       - run: echo "I'm good to go."
