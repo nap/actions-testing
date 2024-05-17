@@ -17,9 +17,8 @@ jobs:
     permissions:
       pull-requests: read
     outputs:
-      keys: steps.files.outputs.changed_keys
-      changed_files: toJSON(steps.files.outputs)
-
+      keys: ${{ steps.files.outputs.changed_keys }}
+      changed_files: ${{ toJSON(steps.files.outputs) }}
     steps:
       - uses: actions/checkout@v4
         with:
