@@ -81,4 +81,4 @@ jobs:
     needs: [files, yml, workflow]
     steps:
       - run: echo "I'm good to go."
-      - run: echo ${{ toJSON(needs.*.result) }}
+      - run: echo "${{ toJSON(needs.*.result) }}"
