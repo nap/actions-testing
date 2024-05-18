@@ -76,7 +76,7 @@ jobs:
       changed-files: ${{ fromJSON(needs.files.outputs.changed_files)['any_all_changed_files'] }}
 
   anonymous:
-    if: contains(needs.*.result, 'success')
+    #if: contains(needs.*.result, 'success')
     runs-on: [ubuntu-latest]
     needs: [files, yml, workflow]
     steps:
