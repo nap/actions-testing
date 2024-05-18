@@ -29,5 +29,8 @@ jobs:
   result:
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
+    needs:
+      - its_ok
+      - not_ok
     steps:
       - run: echo "not cancelled"
