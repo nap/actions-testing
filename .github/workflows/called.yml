@@ -1,0 +1,28 @@
+---
+name: backend test
+on:
+  workflow_call:
+    inputs:
+      keys:
+        required: true
+        type: string
+      changed-files:
+        required: true
+        type: string
+defaults:
+  run:
+    shell: /usr/bin/env -S bash -O globstar -eo pipefail {0}
+jobs:
+  its_ok:
+    environment: production
+    if: contains(inputs.keys, 'any')
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo OK
+      - run: echo OK
+      - run: echo OK
+  not_ok:
+    if: contains(inputs.keys, 'any')
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1

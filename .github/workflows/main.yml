@@ -66,9 +66,17 @@ jobs:
         env:
           SEPARATOR: ","
 
+  workflow:
+    uses: ./.github/workflows/called.yml
+    needs: files
+    with:
+      keys: ${{ needs.files.outputs.keys }}
+      changed-files: ${{ fromJSON(needs.files.outputs.changed_files)['any_all_changed_files'] }}
+
   anonymous:
     if: contains(needs.*.result, 'success')
     runs-on: [ubuntu-latest]
-    needs: [files, yml]
+    needs: [files, yml, workflow]
     steps:
       - run: echo "I'm good to go."
+      - run: echo ${{ needs.*.result }}
