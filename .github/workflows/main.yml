@@ -32,6 +32,8 @@ jobs:
               - '**.md'
             yml:
               - '**.yml'
+            any:
+              - '**/*'
       - run: |
           echo changed_keys "${{ steps.files.outputs.changed_keys }}"
           echo "${{ toJSON(steps.files.outputs) }}"
