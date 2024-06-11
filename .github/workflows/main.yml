@@ -16,21 +16,39 @@ jobs:
           mkdir -vp test
           echo "${{runner.os}}" > test/expression-test-1-key-${{ runner.os }}
       - uses: actions/cache@v4
+        id: cache
         with:
           path: |
             test
           key: expression-test-1-key-${{ runner.os }}
           restore-keys: |
             expression-test-1-key
+      - uses: actions/cache@v4
+        with:
+          path: |
+            test
+          key: expression-test-2-key-${{ steps.cache.outputs.cache-hit != 'true' }}
+          restore-keys: |
+            expression-test-2-key
 
   decache:
     runs-on: [ubuntu-latest]
     steps:
-      - uses: actions/cache@4
+      - uses: actions/cache@v4
         with:
           path: |
             test
           key: expression-test-1-key-${{ runner.os }}
           restore-keys: |
             expression-test-1-key
+      - uses: actions/cache@v4
+        with:
+          path: |
+            test
+          key: expression-test-2-key-true
+      - uses: actions/cache@v4
+        with:
+          path: |
+            test
+          key: expression-test-2-key-false
       - run: cat test/expression-test-1-key-${{ runner.os }}
