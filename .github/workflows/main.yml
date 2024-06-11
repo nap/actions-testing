@@ -1,8 +1,5 @@
 name: main
 on:
-  pull_request:
-    branches:
-      - main
   push:
     branches:
       - main
@@ -12,76 +9,28 @@ defaults:
     shell: /usr/bin/env -S bash -O globstar -xeo pipefail {0}
 
 jobs:
-  files:
+  encache:
     runs-on: [ubuntu-latest]
-    permissions:
-      pull-requests: read
-    outputs:
-      keys: ${{ steps.files.outputs.changed_keys }}
-      changed_files: ${{ toJSON(steps.files.outputs) }}
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-      - uses: tj-actions/changed-files@v44
-        id: files
-        with:
-          separator: ","
-          files_yaml: |
-            md:
-              - '**.md'
-            yml:
-              - '**.yml'
-            any:
-              - '**/*'
       - run: |
-          echo changed_keys "${{ steps.files.outputs.changed_keys }}"
-          echo "${{ toJSON(steps.files.outputs) }}"
-
-  md:
-    if: contains(needs.files.outputs.keys, 'md')
-    runs-on: [ubuntu-latest]
-    needs: files
-    env:
-      CHANGED_FILES: ${{ fromJSON(needs.files.outputs.changed_files)['md_all_changed_files'] }}
-    steps:
-      - uses: actions/checkout@v4
+          mkdir -vp test
+          echo "${{runner.os}}" > test/expression-test-1-key-${{ runner.os }}
+      - uses: actions/cache@4
         with:
-          fetch-depth: 2
+          path: |
+            test
+          key: expression-test-1-key-${{ runner.os }}
+          restore-keys: |
+            expression-test-1-key
 
-      - run: .github/actions/scripts/list_files.sh
-        env:
-          SEPARATOR: ","
-
-  yml:
-    if: contains(needs.files.outputs.keys, 'yml')
+  decache:
     runs-on: [ubuntu-latest]
-    needs: files
-    env:
-      CHANGED_FILES: ${{ fromJSON(needs.files.outputs.changed_files)['yml_all_changed_files'] }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/cache@4
         with:
-          fetch-depth: 2
-
-      - run: .github/actions/scripts/list_files.sh
-        env:
-          SEPARATOR: ","
-
-  workflow:
-    uses: ./.github/workflows/called.yml
-    needs: files
-    with:
-      keys: ${{ needs.files.outputs.keys }}
-      changed-files: ${{ fromJSON(needs.files.outputs.changed_files)['any_all_changed_files'] }}
-
-  anonymous:
-    if: ${{ !cancelled() }} #contains(needs.*.result, 'success')
-    runs-on: [ubuntu-latest]
-    needs: [files, yml, workflow]
-    steps:
-      - run: echo "I'm good to go."
-      - run: echo "${{ toJSON(needs.*) }}"
-      - run: echo "${{ toJSON(env.*) }}"
-      - run: echo "${{ toJSON(github.*) }}"
-      - run: echo "${{ toJSON(event.*) }}"
+          path: |
+            test
+          key: expression-test-1-key-${{ runner.os }}
+          restore-keys: |
+            expression-test-1-key
+      - run: cat test/expression-test-1-key-${{ runner.os }}
